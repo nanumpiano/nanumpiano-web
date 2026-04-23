@@ -7,26 +7,22 @@
   <style>
     :root {
       --paper: #fbfaf5;
-      --paper-soft: #f2f6ee;
-      --ink: #17231c;
-      --muted: #5f6f66;
-      --line: #dce4d8;
+      --paper-soft: #f3f7ef;
+      --ink: #15221b;
+      --muted: #5d6e65;
+      --line: #d9e2d7;
       --violet: #6f54d9;
-      --violet-dark: #4e38ad;
+      --violet-dark: #4d36ad;
       --teal: #0f766e;
       --gold: #c98b2f;
       --coral: #d86f53;
       --white: #ffffff;
-      --shadow: 0 18px 45px rgba(33, 44, 35, 0.12);
+      --shadow: 0 22px 50px rgba(29, 42, 34, 0.14);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -41,10 +37,15 @@
       text-decoration: none;
     }
 
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
     .site-nav {
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 30;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -59,7 +60,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-weight: 800;
+      font-weight: 900;
       font-size: 18px;
     }
 
@@ -80,50 +81,63 @@
       gap: 18px;
       color: var(--muted);
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    .nav-links a:hover {
-      color: var(--violet-dark);
-    }
+    .nav-links a:hover { color: var(--violet-dark); }
 
     .hero {
-      min-height: 78vh;
+      min-height: 80vh;
       display: flex;
       align-items: center;
-      padding: 80px clamp(20px, 6vw, 88px) 96px;
+      padding: 86px clamp(20px, 6vw, 88px) 100px;
       background:
-        linear-gradient(90deg, rgba(251, 250, 245, 0.96) 0%, rgba(251, 250, 245, 0.78) 42%, rgba(251, 250, 245, 0.18) 100%),
+        linear-gradient(90deg, rgba(251, 250, 245, 0.94) 0%, rgba(251, 250, 245, 0.74) 32%, rgba(251, 250, 245, 0.24) 58%, rgba(251, 250, 245, 0.02) 100%),
         url("버튼및 기타/예비로고/NanumPiano.png") center right / cover no-repeat;
       border-bottom: 1px solid var(--line);
     }
 
     .hero-inner {
-      max-width: 760px;
+      max-width: 720px;
     }
 
-    .eyebrow {
-      margin: 0 0 18px;
+    .eyebrow,
+    .section-kicker {
+      margin: 0 0 12px;
       color: var(--teal);
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: 900;
     }
 
     h1 {
       margin: 0;
       max-width: 680px;
-      font-size: 64px;
-      line-height: 1.05;
+      font-size: 72px;
+      line-height: 1.02;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 40px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.24;
       font-weight: 900;
     }
 
     .hero-copy {
       margin: 26px 0 34px;
-      max-width: 640px;
+      max-width: 650px;
       color: #314038;
       font-size: 20px;
-      line-height: 1.7;
-      font-weight: 600;
+      line-height: 1.72;
+      font-weight: 700;
     }
 
     .hero-actions {
@@ -136,34 +150,32 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
       min-height: 48px;
       padding: 0 18px;
       border: 1px solid var(--ink);
       border-radius: 8px;
       background: var(--ink);
       color: var(--white);
-      font-weight: 800;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .button.secondary {
-      background: rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.78);
       color: var(--ink);
+    }
+
+    .button.violet {
+      border-color: var(--violet);
+      background: var(--violet);
     }
 
     .button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(23, 35, 28, 0.15);
+      box-shadow: 0 10px 25px rgba(23, 35, 28, 0.16);
     }
 
-    .button .icon {
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    main {
-      overflow: hidden;
-    }
+    main { overflow: hidden; }
 
     .section {
       padding: 76px clamp(20px, 6vw, 88px);
@@ -174,21 +186,8 @@
     }
 
     .section-head {
-      max-width: 780px;
-      margin-bottom: 32px;
-    }
-
-    .section-kicker {
-      margin: 0 0 10px;
-      color: var(--gold);
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: 38px;
-      line-height: 1.18;
+      max-width: 900px;
+      margin-bottom: 34px;
     }
 
     .section-head p {
@@ -196,7 +195,163 @@
       color: var(--muted);
       font-size: 18px;
       line-height: 1.7;
-      font-weight: 600;
+      font-weight: 700;
+    }
+
+    .demo-section {
+      background: linear-gradient(180deg, #fffdf7 0%, #f3f7ef 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .demo-header-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.55fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 30px;
+    }
+
+    .demo-note {
+      border-left: 4px solid var(--violet);
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #34443a;
+      font-size: 16px;
+      line-height: 1.65;
+      font-weight: 800;
+      box-shadow: 0 14px 30px rgba(29, 42, 34, 0.08);
+    }
+
+    .step-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .step-tab {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(29, 42, 34, 0.07);
+    }
+
+    .step-tab strong {
+      color: var(--violet);
+      margin-right: 8px;
+    }
+
+    .demo-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .demo-step {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 520px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .demo-step::after {
+      content: "";
+      position: absolute;
+      top: 88px;
+      right: -14px;
+      width: 28px;
+      height: 2px;
+      background: var(--violet);
+      z-index: 2;
+    }
+
+    .demo-step:last-child::after {
+      display: none;
+    }
+
+    .demo-shot {
+      position: relative;
+      height: 210px;
+      background: #131713;
+      overflow: hidden;
+    }
+
+    .demo-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.05) contrast(1.04);
+    }
+
+    .demo-badge {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 8px;
+      background: var(--violet);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .demo-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .demo-body p {
+      margin: 0;
+      color: #415046;
+      font-size: 15px;
+      line-height: 1.62;
+      font-weight: 700;
+    }
+
+    .coach-chip {
+      align-self: flex-start;
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 8px;
+      background: #eef8f5;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .demo-link {
+      margin-top: auto;
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: var(--white);
+      font-weight: 900;
     }
 
     .feature-grid {
@@ -206,7 +361,7 @@
     }
 
     .feature-card,
-    .preview-card {
+    .principle-card {
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--white);
@@ -239,121 +394,36 @@
       color: var(--white);
       font-size: 20px;
       font-weight: 900;
+      background: var(--teal);
     }
 
-    .feature-card:nth-child(1) .feature-icon { background: var(--teal); }
     .feature-card:nth-child(2) .feature-icon { background: var(--violet); }
     .feature-card:nth-child(3) .feature-icon { background: var(--coral); }
 
-    .feature-card p {
+    .feature-card p,
+    .principle-card p {
       margin: 0;
       color: #425149;
       font-size: 16px;
       line-height: 1.7;
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .track {
+    .principle-grid {
       display: grid;
-      grid-template-columns: minmax(220px, 0.78fr) minmax(0, 2fr);
-      gap: 26px;
-      align-items: start;
-    }
-
-    .track-order {
-      position: sticky;
-      top: 86px;
-      border-left: 3px solid var(--violet);
-      padding-left: 18px;
-    }
-
-    .track-order ol {
-      margin: 0;
-      padding-left: 20px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 2;
-      font-weight: 800;
-    }
-
-    .preview-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
     }
 
-    .preview-card {
-      min-height: 260px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    .principle-card {
+      padding: 24px;
     }
 
-    .preview-strip {
-      min-height: 112px;
-      display: grid;
-      align-items: end;
-      padding: 18px;
-      color: var(--white);
-      background: #121512;
-    }
-
-    .preview-card:nth-child(1) .preview-strip { background: linear-gradient(135deg, #0f766e, #141817 72%); }
-    .preview-card:nth-child(2) .preview-strip { background: linear-gradient(135deg, #6f54d9, #18161d 72%); }
-    .preview-card:nth-child(3) .preview-strip { background: linear-gradient(135deg, #c98b2f, #171512 72%); }
-    .preview-card:nth-child(4) .preview-strip { background: linear-gradient(135deg, #d86f53, #181514 72%); }
-
-    .preview-step {
+    .principle-label {
+      margin-bottom: 12px;
+      color: var(--gold);
       font-size: 13px;
       font-weight: 900;
-      opacity: 0.82;
-    }
-
-    .preview-title {
-      margin-top: 8px;
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .preview-body {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 22px;
-      padding: 22px;
-    }
-
-    .preview-body p {
-      margin: 0;
-      color: #425149;
-      font-size: 16px;
-      line-height: 1.65;
-      font-weight: 600;
-    }
-
-    .preview-meta {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-      overflow-wrap: anywhere;
-    }
-
-    .preview-link {
-      align-self: flex-start;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 8px;
-      background: var(--violet);
-      color: var(--white);
-      font-weight: 900;
-    }
-
-    .preview-link:hover {
-      background: var(--violet-dark);
     }
 
     .cta {
@@ -365,9 +435,7 @@
       background: #fffaf0;
     }
 
-    .cta h2 {
-      max-width: 760px;
-    }
+    .cta h2 { max-width: 760px; }
 
     .cta p {
       max-width: 780px;
@@ -375,7 +443,7 @@
       color: var(--muted);
       font-size: 17px;
       line-height: 1.7;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .footer {
@@ -386,25 +454,35 @@
       font-weight: 700;
     }
 
+    @media (max-width: 1200px) {
+      .demo-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .demo-step::after {
+        display: none;
+      }
+    }
+
     @media (max-width: 980px) {
       .hero {
         min-height: 72vh;
-        background-position: center right 30%;
+        background-position: center right 28%;
       }
 
-      h1 {
-        font-size: 46px;
-      }
+      h1 { font-size: 48px; }
 
+      h2 { font-size: 32px; }
+
+      .demo-header-row,
       .feature-grid,
-      .preview-grid,
-      .track,
+      .principle-grid,
       .cta {
         grid-template-columns: 1fr;
       }
 
-      .track-order {
-        position: static;
+      .step-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -418,12 +496,17 @@
         flex-wrap: wrap;
       }
 
-      h1 {
-        font-size: 36px;
-      }
+      h1 { font-size: 40px; }
 
-      h2 {
-        font-size: 28px;
+      h2 { font-size: 28px; }
+
+      h3 { font-size: 22px; }
+
+      .hero {
+        padding: 70px 18px 82px;
+        background:
+          linear-gradient(90deg, rgba(251, 250, 245, 0.9) 0%, rgba(251, 250, 245, 0.62) 58%, rgba(251, 250, 245, 0.14) 100%),
+          url("버튼및 기타/예비로고/NanumPiano.png") center / cover no-repeat;
       }
 
       .hero-copy,
@@ -434,19 +517,33 @@
       .section {
         padding: 56px 18px;
       }
+
+      .step-tabs,
+      .demo-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-step {
+        min-height: auto;
+      }
+
+      .demo-shot {
+        height: 190px;
+      }
     }
   </style>
 </head>
 <body>
   <nav class="site-nav" aria-label="주요 이동">
-    <a class="brand" href="#top" aria-label="나눔피아노 프리뷰 허브 홈">
+    <a class="brand" href="#top" aria-label="나눔피아노 홈">
       <span class="brand-mark">NP</span>
       <span>나눔피아노</span>
     </a>
     <div class="nav-links">
+      <a href="#demo">시연 보기</a>
       <a href="#features">기능 요약</a>
-      <a href="#track">작동 원리</a>
-      <a href="#cta">시연 문의</a>
+      <a href="#principle">작동 원리</a>
+      <a href="#cta">도입 문의</a>
     </div>
   </nav>
 
@@ -456,21 +553,95 @@
         <p class="eyebrow">피아노 학습과 악보 편집을 하나로</p>
         <h1 id="hero-title">나눔피아노</h1>
         <p class="hero-copy">
-          악보를 만들고, 저장하고, 같은 악보를 다시 불러와 바로 학습하는 피아노 학습 시스템입니다.
-          Step 1은 한 음씩 익히고, Step 2는 속도를 조절하며, Editor는 악보를 편집해 학습에 다시 적용합니다.
+          악보를 만들고 저장한 뒤, 같은 악보를 다시 불러와 타자게임연습하듯이 따라하는 피아노 학습 시스템입니다.
+          AI 코칭은 현재 속도와 미스 지점을 읽고 다음 연습 행동을 안내합니다.
         </p>
         <div class="hero-actions">
-          <a class="button" href="#track"><span class="icon">↓</span><span>작동 원리 보기</span></a>
-          <a class="button secondary" href="preview/step1_v3.html" target="_blank" rel="noopener"><span class="icon">▶</span><span>프리뷰 보기</span></a>
+          <a class="button" href="#principle">작동 원리 보기</a>
+          <a class="button secondary" href="#demo">프리뷰 보기</a>
         </div>
+      </div>
+    </section>
+
+    <section class="section demo-section" id="demo" aria-labelledby="demo-title">
+      <div class="demo-header-row">
+        <div class="section-head">
+          <p class="section-kicker">시연 프리뷰</p>
+          <h2 id="demo-title">시연은 Step 1부터 순서대로 보면 전체 사용 흐름이 이어집니다.</h2>
+          <p>Step 1부터 재적용까지 실제 사용 흐름을 순서대로 시연합니다. 먼저 눈으로 작동을 보고, 그 다음 기능 설명을 읽는 구조입니다.</p>
+        </div>
+        <div class="demo-note">
+          핵심은 악보를 저장해 두고, 같은 데이터를 Step 1과 Step 2에서 다시 불러와 AI 코칭과 함께 연습하는 흐름입니다.
+        </div>
+      </div>
+
+      <div class="step-tabs" aria-label="시연 단계">
+        <a class="step-tab" href="preview/step1_v3.html" target="_blank" rel="noopener"><strong>01</strong> Step 1</a>
+        <a class="step-tab" href="preview/step2.html" target="_blank" rel="noopener"><strong>02</strong> Step 2</a>
+        <a class="step-tab" href="preview/editor_flow.html" target="_blank" rel="noopener"><strong>03</strong> Editor</a>
+        <a class="step-tab" href="preview/reapply_flow.html" target="_blank" rel="noopener"><strong>04</strong> Reapply</a>
+      </div>
+
+      <div class="demo-flow">
+        <article class="demo-step">
+          <div class="demo-shot">
+            <img src="실행프로그램 작동 순서/1단계시작화면.png" alt="Step 1 시작 화면">
+            <span class="demo-badge">01 Step 1</span>
+          </div>
+          <div class="demo-body">
+            <span class="coach-chip">AI 코칭: 현재 누를 음 안내</span>
+            <h3>타자게임연습하듯이 한 음씩 따라하기</h3>
+            <p>악보의 현재 음과 건반이 지시선으로 연결됩니다. 사용자는 화면이 가리키는 음을 따라 누르며 즉시 학습합니다.</p>
+            <a class="demo-link" href="preview/step1_v3.html" target="_blank" rel="noopener">Step 1 프리뷰 열기</a>
+          </div>
+        </article>
+
+        <article class="demo-step">
+          <div class="demo-shot">
+            <img src="실행프로그램 작동 순서/2단계속도조절후 연주.jpg" alt="Step 2 속도 조절 후 연주 화면">
+            <span class="demo-badge">02 Step 2</span>
+          </div>
+          <div class="demo-body">
+            <span class="coach-chip">AI 코칭: 빠른 속도와 미스 감지</span>
+            <h3>속도를 올려 흐름을 훈련하기</h3>
+            <p>곡을 선택하고 속도를 조절해 연주 흐름을 확인합니다. 미스가 보이면 AI 코칭이 느린 속도 재훈련을 제안합니다.</p>
+            <a class="demo-link" href="preview/step2.html" target="_blank" rel="noopener">Step 2 프리뷰 열기</a>
+          </div>
+        </article>
+
+        <article class="demo-step">
+          <div class="demo-shot">
+            <img src="실행프로그램 작동 순서/에디터 첫화면.png" alt="에디터 첫 화면">
+            <span class="demo-badge">03 Editor</span>
+          </div>
+          <div class="demo-body">
+            <span class="coach-chip">AI 코칭: 편집 상태 설명</span>
+            <h3>건반 채보와 마우스 수정</h3>
+            <p>에디터에서 건반 입력으로 악보를 만들고, 마우스로 음 위치를 수정합니다. 완성된 악보는 학습용 파일로 저장됩니다.</p>
+            <a class="demo-link" href="preview/editor_flow.html" target="_blank" rel="noopener">Editor 프리뷰 열기</a>
+          </div>
+        </article>
+
+        <article class="demo-step">
+          <div class="demo-shot">
+            <img src="실행프로그램 작동 순서/저장한 악보를 1단계로불러오기.png" alt="저장한 악보를 Step 1로 불러온 화면">
+            <span class="demo-badge">04 Reapply</span>
+          </div>
+          <div class="demo-body">
+            <span class="coach-chip">AI 코칭: 저장 악보 재분석</span>
+            <h3>저장한 악보를 다시 학습에 적용</h3>
+            <p>저장된 같은 악보를 Step 1과 Step 2에 다시 불러옵니다. 지시선, 손가락 번호, 속도 훈련이 같은 데이터에 붙습니다.</p>
+            <a class="demo-link" href="preview/reapply_flow.html" target="_blank" rel="noopener">Reapply 프리뷰 열기</a>
+          </div>
+        </article>
       </div>
     </section>
 
     <section class="section" id="features" aria-labelledby="features-title">
       <div class="section-head">
         <p class="section-kicker">핵심 기능 3개</p>
-        <h2 id="features-title">학습, 흐름 훈련, 편집과 재적용을 분리해 보여줍니다.</h2>
-        <p>각 기능은 하나의 멋있는 설명으로 뭉개지지 않고, 실제 사용 순서와 화면 의미를 유지합니다.</p>
+        <h2 id="features-title">방금 본 시연은 세 가지 기능으로 나뉩니다.</h2>
+        <p>시연 흐름을 본 뒤, Step 1, Step 2, Editor가 각각 어떤 역할을 맡는지 정리합니다.</p>
       </div>
       <div class="feature-grid">
         <article class="feature-card">
@@ -478,117 +649,57 @@
             <div class="feature-label">Step 1 즉시 학습</div>
             <div class="feature-icon">1</div>
           </div>
-          <p>저장한 악보를 불러오고, 지시선과 건반 표시를 따라 한 음씩 확인합니다. 사용자는 지금 눌러야 할 음과 손 위치를 화면에서 직접 봅니다.</p>
+          <p>저장한 악보를 불러오고, 지시선과 건반 표시를 따라 한 음씩 확인합니다. 타자게임연습하듯이 화면이 가리키는 대상을 따라가는 방식입니다.</p>
         </article>
         <article class="feature-card">
           <div class="feature-top">
             <div class="feature-label">Step 2 속도 훈련</div>
             <div class="feature-icon">2</div>
           </div>
-          <p>곡을 선택한 뒤 훈련 속도를 올려 연주 흐름을 확인합니다. 미스가 발생하면 AI 코칭이 속도 재조정을 제안하고 느린 훈련으로 이어집니다.</p>
+          <p>곡을 선택한 뒤 속도를 올려 연주 흐름을 확인합니다. AI 코칭이 빠른 속도, 미스 발생, 재조정 필요성을 알려 느린 훈련으로 이어줍니다.</p>
         </article>
         <article class="feature-card">
           <div class="feature-top">
             <div class="feature-label">Editor 편집과 재적용</div>
             <div class="feature-icon">E</div>
           </div>
-          <p>건반으로 채보하고 마우스로 수정한 악보를 저장합니다. 저장된 같은 파일은 Step 1과 Step 2에서 다시 불러와 학습용 데이터로 작동합니다.</p>
+          <p>건반으로 채보하고 마우스로 수정한 악보를 저장합니다. 저장된 파일은 Step 1과 Step 2에서 다시 불러와 학습용 데이터로 작동합니다.</p>
         </article>
       </div>
     </section>
 
-    <section class="section alt" id="track" aria-labelledby="track-title">
+    <section class="section alt" id="principle" aria-labelledby="principle-title">
       <div class="section-head">
-        <p class="section-kicker">작동 원리 트랙</p>
-        <h2 id="track-title">현재 합격선 프리뷰 4개를 순서대로 연결했습니다.</h2>
-        <p>안정성을 우선해 메인 페이지 안에 무겁게 임베드하지 않고, 각 프리뷰를 별도 화면으로 여는 링크 카드 방식으로 연결했습니다.</p>
+        <p class="section-kicker">작동 원리 설명</p>
+        <h2 id="principle-title">악보 데이터 하나가 학습, 훈련, 재적용을 잇습니다.</h2>
+        <p>홈페이지는 밝은 설명 트랙으로 유지하고, 실제 프리뷰 무대는 기존 어두운 톤 그대로 별도 화면에서 확인하게 했습니다.</p>
       </div>
-      <div class="track">
-        <aside class="track-order" aria-label="프리뷰 진행 순서">
-          <ol>
-            <li>Step 1 기본 타건</li>
-            <li>Step 2 속도 조절</li>
-            <li>Editor 채보와 저장</li>
-            <li>저장 악보 재적용</li>
-          </ol>
-        </aside>
-        <div class="preview-grid">
-          <article class="preview-card">
-            <div class="preview-strip">
-              <div>
-                <div class="preview-step">01 / Step 1</div>
-                <div class="preview-title">한 음씩 따라치는 기본 학습</div>
-              </div>
-            </div>
-            <div class="preview-body">
-              <p>저장된 악보를 Step 1에 불러오고, 악보의 현재 음과 하단 건반이 지시선으로 연결됩니다.</p>
-              <div>
-                <div class="preview-meta">preview/step1_v3.html</div>
-                <a class="preview-link" href="preview/step1_v3.html" target="_blank" rel="noopener">프리뷰 열기 →</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="preview-card">
-            <div class="preview-strip">
-              <div>
-                <div class="preview-step">02 / Step 2</div>
-                <div class="preview-title">속도 조절과 흐름 훈련</div>
-              </div>
-            </div>
-            <div class="preview-body">
-              <p>곡 선택 후 빠른 속도로 훈련하고, 미스가 보이면 AI 코칭이 재조정을 안내해 느린 훈련으로 전환합니다.</p>
-              <div>
-                <div class="preview-meta">preview/step2.html</div>
-                <a class="preview-link" href="preview/step2.html" target="_blank" rel="noopener">프리뷰 열기 →</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="preview-card">
-            <div class="preview-strip">
-              <div>
-                <div class="preview-step">03 / Editor</div>
-                <div class="preview-title">건반 채보, 마우스 수정, 저장</div>
-              </div>
-            </div>
-            <div class="preview-body">
-              <p>에디터 첫 화면에서 건반 입력으로 악보를 만들고, 마우스로 수정한 뒤 학습용 파일로 저장합니다.</p>
-              <div>
-                <div class="preview-meta">preview/editor_flow.html</div>
-                <a class="preview-link" href="preview/editor_flow.html" target="_blank" rel="noopener">프리뷰 열기 →</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="preview-card">
-            <div class="preview-strip">
-              <div>
-                <div class="preview-step">04 / Reapply</div>
-                <div class="preview-title">저장한 악보의 재적용</div>
-              </div>
-            </div>
-            <div class="preview-body">
-              <p>Editor에서 저장한 같은 악보가 Step 1과 Step 2에 다시 로드되어 지시선, 손가락 번호, 속도 훈련에 연결됩니다.</p>
-              <div>
-                <div class="preview-meta">preview/reapply_flow.html</div>
-                <a class="preview-link" href="preview/reapply_flow.html" target="_blank" rel="noopener">프리뷰 열기 →</a>
-              </div>
-            </div>
-          </article>
-        </div>
+      <div class="principle-grid">
+        <article class="principle-card">
+          <div class="principle-label">입력과 저장</div>
+          <p>Editor에서 건반 입력과 마우스 수정으로 악보를 만들고 저장합니다. 저장은 다음 학습 단계가 같은 악보를 불러오기 위한 기준점입니다.</p>
+        </article>
+        <article class="principle-card">
+          <div class="principle-label">학습과 속도 조절</div>
+          <p>Step 1은 한 음씩 따라치는 즉시 학습이고, Step 2는 속도를 조절하며 흐름을 익히는 훈련입니다. 두 단계는 역할을 섞지 않습니다.</p>
+        </article>
+        <article class="principle-card">
+          <div class="principle-label">AI 코칭과 재적용</div>
+          <p>AI 코칭은 현재 상태, 미스 지점, 다음 행동을 알려줍니다. 저장된 악보를 다시 불러오면 같은 데이터 위에 코칭과 훈련 요소가 다시 붙습니다.</p>
+        </article>
       </div>
     </section>
 
     <section class="section cta" id="cta" aria-labelledby="cta-title">
       <div>
         <p class="section-kicker">하단 CTA</p>
-        <h2 id="cta-title">시연은 Step 1부터 순서대로 보면 전체 사용 흐름이 이어집니다.</h2>
-        <p>밝은 홈페이지에서 구조를 확인한 뒤, 기존 어두운 프리뷰 무대에서 실제 학습 흐름을 확인할 수 있습니다.</p>
+        <h2 id="cta-title">지금 전체 흐름을 확인하세요.</h2>
+        <p>Step 1부터 저장 후 재적용까지, 실제 프리뷰를 순서대로 열어 시연 흐름을 확인할 수 있습니다.</p>
       </div>
       <div class="hero-actions">
-        <a class="button" href="preview/step1_v3.html" target="_blank" rel="noopener"><span class="icon">▶</span><span>시연 보기</span></a>
-        <a class="button secondary" href="mailto:?subject=나눔피아노 도입 문의"><span class="icon">✉</span><span>도입 문의</span></a>
+        <a class="button" href="#demo">전체 흐름 확인하기</a>
+        <a class="button violet" href="preview/step1_v3.html" target="_blank" rel="noopener">지금 시연 보기</a>
+        <a class="button secondary" href="mailto:?subject=나눔피아노 도입 문의">도입 문의</a>
       </div>
     </section>
   </main>
