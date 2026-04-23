@@ -232,3 +232,19 @@
   1) 두 번째 커밋 생성 완료.
   2) 커밋 메시지: `feat: prioritize homepage demo flow`
   3) 최종 커밋 해시는 `git log --oneline -1`로 확인한다.
+
+### [17:50] 이관 작업: 메인 페이지 프리뷰 레이아웃 고도화 및 웹 공개 준비
+- 작업: 부사장의 최종 이관 지시문(`[지시권자: 부사장]`)을 받아, `index.html`의 시연 프리뷰 섹션과 확장 학습 콘텐츠 섹션을 대폭 보정하여 웹에서 볼 수 있는 형태로 고도화하였다.
+- 변경 파일:
+  1) `index.html` 수정:
+     - `.demo-section` 여백을 확장하여 프리뷰가 좌우로 넓고 시원하게 보이도록 수정 (최대 너비 1600px 적용)
+     - `iframe` (`.live-preview-frame`)의 높이를 `clamp(720px, 86vh, 1200px)`로 적용하여 주인공처럼 크고 시원하게 보이도록 반응형 구현
+     - 확장 학습 콘텐츠(`.expansion-card`) 섹션의 밀도를 높이고, 카드 호버 시 그림자 연출 추가. 절대음감 훈련 카드는 아이콘/배지/테두리로 시각적 우선순위 강조
+  2) `capture.js` 신규 생성 및 Playwright 설치: 검수용 스크린샷 6장 자동 캡처 스크립트 작성 및 실행
+  3) `WORK_LOG.md` 갱신: 이관 작업 내용, Git 상태 점검 결과 기록
+- 검증 및 Git 처리:
+  1) Git remote 상태: `git remote -v` 결과 원격 저장소가 비어있음을 확인. 지시에 따라 외부 배포 세팅 대신 로컬 기준 완료 보고 수행. push 불가.
+  2) 로컬 구동: `python -m http.server 8088`를 통해 로컬 구동 확인 완료 (주소: http://127.0.0.1:8088/)
+  3) 브라우저 검수: Hero 영역, Step 1, Step 2, Editor, Reapply, 확장 학습 섹션 총 6종의 스크린샷을 추출 완료. 데스크톱 환경(1600x1200)에서 프리뷰 블록이 잘림 없이 꽉 찬 무대처럼 보이는 것 확인.
+- 다음 작업: 변경사항 커밋 (`feat: refine homepage preview layout and publish-ready setup`) 진행.
+
