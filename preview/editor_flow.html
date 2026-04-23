@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>NanumPiano Editor Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@300;500;700&display=swap');
+
+        body {
+            background-color: #121212;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            color: #E0E0E0;
+        }
+
+        /* App Window Frame */
+        #app-window {
+            width: 1600px;
+            height: 900px;
+            background: #1E1E1E;
+            border-radius: 8px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #333;
+        }
+
+        /* Speech Bubble */
+        #action-bubble {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 229, 255, 0.9);
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,229,255,0.4);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        #action-bubble.show { opacity: 1; }
+        .bubble-icon { background: #000; color: #00E5FF; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 16px; }
+
+        /* 1. Menu Bar */
+        #menu-bar {
+            height: 40px;
+            background: #252526;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #111;
+            font-size: 13px;
+        }
+        .menu-logo { font-weight: 700; color: #FFF; margin-right: 30px; display: flex; align-items: center; gap: 8px; }
+        .menu-logo span { background: #FF7300; color: #000; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 900; }
+        .menu-item { padding: 5px 12px; cursor: pointer; border-radius: 4px; transition: background 0.2s; }
+        .menu-btn-save { margin-left: auto; background: #007ACC; color: white; padding: 4px 15px; border-radius: 4px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .menu-btn-save.hovered { background: #0098FF; transform: scale(1.05); }
+
+        /* 2. Toolbar & Info Strip */
+        #toolbar-strip {
+            height: 50px;
+            background: #2D2D30;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #111;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        
+        .track-info { display: flex; gap: 30px; background: #1E1E1E; padding: 6px 20px; border-radius: 6px; border: 1px solid #3E3E42; }
+        .info-block { display: flex; flex-direction: column; }
+        .info-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .info-val { font-size: 14px; font-weight: 600; color: #00E5FF; }
+        .info-val.white { color: #FFF; }
+
+        .transport-controls { display: flex; margin-left: auto; gap: 10px; background: #1E1E1E; padding: 5px; border-radius: 6px; border: 1px solid #3E3E42; }
+        .t-btn { width: 36px; height: 32px; display: flex; align-items: center; justify-content: center; background: #2D2D30; border-radius: 4px; cursor: pointer; font-size: 16px; color: #CCC; }
+
+        /* 3. Main Workspace Area */
+        #workspace { display: flex; flex: 1; overflow: hidden; background: #1E1E1E; }
+
+        /* Left Tools */
+        #left-tools {
+            width: 70px;
+            background: #252526;
+            border-right: 1px solid #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            gap: 8px;
+            z-index: 5;
+        }
+        .l-tool { width: 40px; height: 40px; background: #333337; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: #AAA; font-size: 20px; border: 1px solid transparent; }
+        .l-tool.active { background: rgba(0, 122, 204, 0.3); color: #00E5FF; border-color: #007ACC; box-shadow: inset 0 0 10px rgba(0,122,204,0.5); }
+        .tool-sep { width: 40px; height: 1px; background: #444; margin: 5px 0; }
+
+        /* Score Canvas Area */
+        #score-area { flex: 1; background: #2D2D30; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 40px; overflow-x: auto; }
+        
+        #paper {
+            width: 1400px;
+            height: 450px;
+            background: #FDFDFD;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            border-radius: 4px;
+            padding: 40px;
+            position: relative;
+        }
+
+        /* 4. Bottom Piano Keyboard */
+        #bottom-piano {
+            height: 140px;
+            background: #252526;
+            border-top: 1px solid #111;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 15px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        #piano-container { display: flex; position: relative; }
+        .key { position: relative; border: 1px solid #999; }
+        .key.white { width: 26px; height: 110px; background: linear-gradient(to bottom, #FFF, #E0E0E0); border-radius: 0 0 4px 4px; box-shadow: inset 0 -2px 5px rgba(0,0,0,0.1); }
+        .key.black { width: 16px; height: 70px; background: linear-gradient(to bottom, #333, #000); border-radius: 0 0 3px 3px; position: absolute; top: 0; left: -8px; z-index: 2; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        
+        .key.white.active { background: #FFD700; box-shadow: inset 0 0 15px rgba(255,100,0,0.8); }
+        .key.black.active { background: #FF7300; }
+
+        /* SVG Overrides */
+        .vf-stavenote { transition: all 0.2s; }
+        .vf-stavenote.editing path { fill: #FF2A2A !important; stroke: #FF2A2A !important; }
+
+        /* 5. Save Dialog Modal */
+        #save-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+        #save-overlay.show { opacity: 1; pointer-events: all; }
+        
+        #save-dialog {
+            width: 600px; background: #252526; border: 1px solid #454545; border-radius: 8px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            transform: translateY(20px); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #save-overlay.show #save-dialog { transform: translateY(0); }
+        
+        .sd-header { padding: 15px 20px; background: #333337; border-bottom: 1px solid #1E1E1E; font-weight: 600; border-radius: 8px 8px 0 0; font-size: 16px; }
+        .sd-body { padding: 25px; display: flex; flex-direction: column; gap: 20px; }
+        
+        .sd-row { display: flex; gap: 15px; align-items: center; }
+        .sd-label { width: 90px; color: #AAA; font-size: 14px; text-align: right; }
+        .sd-input { flex: 1; background: #1E1E1E; border: 1px solid #454545; color: #FFF; padding: 10px 15px; border-radius: 4px; font-size: 15px; font-family: inherit; }
+        
+        .sd-file-list { margin-left: 105px; background: #1E1E1E; border: 1px solid #333; height: 150px; border-radius: 4px; overflow-y: auto; padding: 5px; }
+        .sd-file-item { padding: 8px 12px; font-size: 14px; color: #BBB; display: flex; gap: 10px; cursor: pointer; border-bottom: 1px solid #222; }
+        .sd-file-item:hover { background: #2A2D2E; }
+        .sd-file-icon { color: #007ACC; }
+
+        .sd-footer { padding: 20px; background: #1E1E1E; border-top: 1px solid #333; display: flex; justify-content: flex-end; gap: 15px; border-radius: 0 0 8px 8px; }
+        .sd-btn { padding: 10px 25px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+        .sd-btn.cancel { background: transparent; border-color: #555; color: #CCC; }
+        .sd-btn.save { background: #007ACC; color: #FFF; }
+        .sd-btn.save.hovered { background: #0098FF; transform: scale(1.05); }
+
+        /* Toast */
+        #toast {
+            position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: #4CAF50; color: #FFF; padding: 15px 30px; border-radius: 30px; font-weight: 600; font-size: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            opacity: 0; transition: all 0.5s; z-index: 200; pointer-events: none;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Cursor */
+        #cursor {
+            position: absolute; width: 28px; height: 28px; z-index: 500; pointer-events: none; opacity: 0;
+            transition: left 0.8s cubic-bezier(0.25, 1, 0.5, 1), top 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>');
+            background-size: contain; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.6));
+        }
+        #cursor.click { transform: scale(0.85); transition: transform 0.1s; }
+        #cursor.drag { transition: left 1.5s ease-in-out, top 1.5s ease-in-out; }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-window">
+        <!-- Speech Bubble -->
+        <div id="action-bubble"><div class="bubble-icon">i</div> <span id="bubble-text"></span></div>
+
+        <!-- 1. Menu Bar -->
+        <div id="menu-bar">
+            <div class="menu-logo"><span>NP</span> NanumPiano Editor Pro</div>
+            <div class="menu-item">File</div><div class="menu-item">Edit</div><div class="menu-item">Score</div><div class="menu-item">MIDI</div><div class="menu-item">View</div>
+            <div class="menu-btn-save" id="top-save-btn">💾 Save</div>
+        </div>
+
+        <!-- 2. Toolbar -->
+        <div id="toolbar-strip">
+            <div class="track-info">
+                <div class="info-block"><div class="info-label">Title</div><div class="info-val white">나눔 판타지아</div></div>
+                <div class="info-block"><div class="info-label">Tempo</div><div class="info-val">Moderato (♩=100)</div></div>
+                <div class="info-block"><div class="info-label">Composer</div><div class="info-val white">나눔</div></div>
+                <div class="info-block"><div class="info-label">Key</div><div class="info-val">D Major</div></div>
+            </div>
+            <div class="transport-controls">
+                <div class="t-btn">⏮</div><div class="t-btn" style="color:#4CAF50;">▶</div><div class="t-btn">⏹</div><div class="t-btn" style="color:#F44336;">●</div>
+            </div>
+        </div>
+
+        <!-- 3. Workspace -->
+        <div id="workspace">
+            <div id="left-tools">
+                <div class="l-tool">⬭</div>
+                <div class="l-tool active" id="tool-pencil">✏️</div>
+                <div class="l-tool">▱</div>
+                <div class="tool-sep"></div>
+                <div class="l-tool">𝅝</div>
+                <div class="l-tool">𝅗𝅥</div>
+                <div class="l-tool">♩</div>
+                <div class="l-tool">♪</div>
+                <div class="tool-sep"></div>
+                <div class="l-tool" style="font-size:16px; font-weight:bold;">mf</div>
+                <div class="l-tool">♯</div>
+            </div>
+            <div id="score-area">
+                <div id="paper"><div id="score-canvas"></div></div>
+            </div>
+        </div>
+
+        <!-- 4. Piano -->
+        <div id="bottom-piano">
+            <div id="piano-container"></div>
+        </div>
+
+        <!-- 5. Save Dialog -->
+        <div id="save-overlay">
+            <div id="save-dialog">
+                <div class="sd-header">Save to Learning Data System</div>
+                <div class="sd-body">
+                    <div class="sd-row">
+                        <div class="sd-label">Location:</div>
+                        <div class="sd-input" style="color:#888; background:#1A1A1A;">D:\NanumPiano\Projects</div>
+                    </div>
+                    <div class="sd-row" style="align-items:flex-start;">
+                        <div class="sd-label" style="padding-top:10px;">Existing Files:</div>
+                        <div class="sd-file-list" style="flex:1;">
+                            <div class="sd-file-item"><span class="sd-file-icon">🎵</span> Step1_Basic.ant</div>
+                            <div class="sd-file-item"><span class="sd-file-icon">🎵</span> 엘리제를_위하여_Lv2.ant</div>
+                            <div class="sd-file-item"><span class="sd-file-icon">🎵</span> 모차르트_소나타_1악장.ant</div>
+                            <div class="sd-file-item"><span class="sd-file-icon">🎵</span> 나의_첫_작곡_스케치.ant</div>
+                        </div>
+                    </div>
+                    <div class="sd-row">
+                        <div class="sd-label">File Name:</div>
+                        <input type="text" class="sd-input" value="나눔 판타지아.ant" style="color:#00E5FF; font-weight:bold; border-color:#007ACC; font-size:16px;">
+                    </div>
+                </div>
+                <div class="sd-footer">
+                    <div class="sd-btn cancel">Cancel</div>
+                    <div class="sd-btn save" id="modal-save-btn">Save to System</div>
+                </div>
+            </div>
+        </div>
+        <div id="toast">✔ 저장 완료 (나눔 판타지아.ant) - 학습 시스템 동기화 완료</div>
+        <div id="cursor"></div>
+    </div>
+
+    <script>
+        const VF = Vex.Flow;
+        const isBlackKey = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0];
+        
+        // Build Piano (61 Keys)
+        const piano = document.getElementById('piano-container');
+        for(let i=0; i<61; i++) {
+            const midi = 36 + i; 
+            if(isBlackKey[(midi - 12) % 12] === 0) {
+                const wk = document.createElement('div'); wk.className = 'key white'; wk.dataset.midi = midi; piano.appendChild(wk);
+            } else {
+                const bk = document.createElement('div'); bk.className = 'key black'; bk.dataset.midi = midi; piano.lastChild.appendChild(bk);
+            }
+        }
+
+        // 3 Measures Score Rendering
+        function renderScore(state) {
+            const div = document.getElementById("score-canvas");
+            div.innerHTML = '';
+            const renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+            renderer.resize(1300, 350);
+            const ctx = renderer.getContext();
+            
+            const w1 = 400, w2 = 400, w3 = 450;
+            const x1 = 0, x2 = w1, x3 = w1 + w2;
+
+            const stTreble1 = new VF.Stave(x1, 40, w1).addClef("treble").addKeySignature("D").addTimeSignature("4/4").setContext(ctx).draw();
+            const stBass1 = new VF.Stave(x1, 150, w1).addClef("bass").addKeySignature("D").addTimeSignature("4/4").setContext(ctx).draw();
+            new VF.StaveConnector(stTreble1, stBass1).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw();
+            new VF.StaveConnector(stTreble1, stBass1).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(ctx).draw();
+
+            const stTreble2 = new VF.Stave(x2, 40, w2).setContext(ctx).draw();
+            const stBass2 = new VF.Stave(x2, 150, w2).setContext(ctx).draw();
+            
+            const stTreble3 = new VF.Stave(x3, 40, w3).setContext(ctx).draw();
+            const stBass3 = new VF.Stave(x3, 150, w3).setContext(ctx).draw();
+            new VF.StaveConnector(stTreble3, stBass3).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(ctx).draw();
+
+            let notesT1 = [], notesT2 = [], notesT3 = [];
+            let notesB1 = [new VF.StaveNote({clef:"bass", keys:["d/3"], duration:"w"})];
+            let notesB2 = [new VF.StaveNote({clef:"bass", keys:["b/2"], duration:"w"})];
+            let notesB3 = [new VF.StaveNote({clef:"bass", keys:["g/2"], duration:"w"})];
+
+            // State definitions for sequential input
+            if(state >= 0) { notesT1.push(new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"wr"})); }
+            if(state >= 0) { notesT2.push(new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"wr"})); }
+            if(state >= 0) { notesT3.push(new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"wr"})); }
+
+            // Progressive build
+            if(state >= 1) notesT1 = [new VF.StaveNote({clef:"treble", keys:["f/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"qr"}), new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"hr"})];
+            if(state >= 2) notesT1 = [new VF.StaveNote({clef:"treble", keys:["f/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["e/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"hr"})];
+            if(state >= 3) notesT1 = [new VF.StaveNote({clef:"treble", keys:["f/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["e/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["d/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["c/4"], duration:"q"})];
+            
+            if(state >= 4) notesT2 = [new VF.StaveNote({clef:"treble", keys:["b/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["a/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"hr"})];
+            if(state >= 5) notesT2 = [new VF.StaveNote({clef:"treble", keys:["b/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["a/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["b/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["c/4"], duration:"q"})];
+            
+            if(state === 6) { // Mouse editing state
+                notesT3 = [new VF.StaveNote({clef:"treble", keys:["f/4"], duration:"h"}), new VF.StaveNote({clef:"treble", keys:["b/4"], duration:"hr"})];
+                notesT3[0].setStyle({fillStyle: "#FF2A2A", strokeStyle: "#FF2A2A"}); // Red for edit
+            }
+            if(state >= 7) notesT3 = [new VF.StaveNote({clef:"treble", keys:["d/4"], duration:"h"}), new VF.StaveNote({clef:"treble", keys:["e/4"], duration:"h"})]; // Final
+
+            // Format & Draw M1
+            let vT1 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(notesT1); let vB1 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(notesB1);
+            new VF.Formatter().joinVoices([vT1, vB1]).format([vT1, vB1], w1 - 50); vT1.draw(ctx, stTreble1); vB1.draw(ctx, stBass1);
+            
+            // Format & Draw M2
+            let vT2 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(notesT2); let vB2 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(notesB2);
+            new VF.Formatter().joinVoices([vT2, vB2]).format([vT2, vB2], w2 - 50); vT2.draw(ctx, stTreble2); vB2.draw(ctx, stBass2);
+
+            // Format & Draw M3
+            let vT3 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(notesT3); let vB3 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(notesB3);
+            new VF.Formatter().joinVoices([vT3, vB3]).format([vT3, vB3], w3 - 50); vT3.draw(ctx, stTreble3); vB3.draw(ctx, stBass3);
+        }
+
+        const bubble = document.getElementById('action-bubble');
+        const bText = document.getElementById('bubble-text');
+        function showBubble(msg, dur) {
+            bText.innerText = msg;
+            bubble.classList.add('show');
+            if(dur) setTimeout(() => bubble.classList.remove('show'), dur);
+        }
+
+        const cursor = document.getElementById('cursor');
+        function setCursor(x, y) { cursor.style.opacity = 1; cursor.style.left = x + 'px'; cursor.style.top = y + 'px'; }
+        function triggerKey(midi, dur) {
+            const key = document.querySelector(`.key[data-midi="${midi}"]`);
+            if(key) { key.classList.add('active'); setTimeout(() => key.classList.remove('active'), dur); }
+        }
+
+        // Sequence Script
+        window.onload = () => {
+            renderScore(0);
+            
+            // Scene 1: Boot
+            setTimeout(() => {
+                showBubble("에디터를 열고 새 악보 작업을 시작합니다.", 4000);
+                
+                // Scene 2: Keyboard Input
+                setTimeout(() => {
+                    showBubble("하단 건반 입력이 악보 음표로 바로 기록됩니다.", 5000);
+                    
+                    setTimeout(()=> { triggerKey(66, 400); renderScore(1); }, 1000); // F#4
+                    setTimeout(()=> { triggerKey(64, 400); renderScore(2); }, 2000); // E4
+                    setTimeout(()=> { triggerKey(62, 400); renderScore(3); }, 3000); // D4, C#4...
+                    setTimeout(()=> { triggerKey(59, 400); renderScore(4); }, 4000); // M2 B3, A3...
+                    setTimeout(()=> { triggerKey(61, 400); renderScore(5); }, 5000); // M2 done
+                    
+                    // Scene 3: Mouse Edit
+                    setTimeout(() => {
+                        showBubble("입력된 음을 마우스로 선택해 위치를 수정합니다.", 5000);
+                        renderScore(6); // F#4 appears in M3, RED
+                        
+                        setTimeout(() => {
+                            const notes = document.querySelectorAll('.vf-stavenote');
+                            const target = notes[notes.length - 1].getBoundingClientRect(); // Last note (F#4 in M3)
+                            setCursor(target.left + 10, target.top + 10);
+                            
+                            setTimeout(() => {
+                                cursor.classList.add('click'); cursor.classList.add('drag');
+                                setCursor(target.left + 10, target.top + 30); // Drag down to D4
+                                
+                                setTimeout(() => {
+                                    renderScore(7); // Changes to D4, E4
+                                    cursor.classList.remove('click'); cursor.classList.remove('drag');
+                                    
+                                    // Scene 4: Score Completed
+                                    setTimeout(() => {
+                                        cursor.style.opacity = 0;
+                                        showBubble("작업이 완료된 악보를 확인합니다.", 3000);
+                                        
+                                        // Scene 5: Save
+                                        setTimeout(() => {
+                                            showBubble("완성한 악보를 시스템에 저장합니다.", 6000);
+                                            const saveBtn = document.getElementById('top-save-btn');
+                                            const sRect = saveBtn.getBoundingClientRect();
+                                            setCursor(sRect.left + 20, sRect.top + 10);
+                                            
+                                            setTimeout(() => {
+                                                cursor.classList.add('click'); saveBtn.classList.add('hovered');
+                                                setTimeout(() => {
+                                                    cursor.classList.remove('click'); saveBtn.classList.remove('hovered');
+                                                    document.getElementById('save-overlay').classList.add('show');
+                                                    cursor.style.opacity = 0;
+                                                    
+                                                    // Scene 6: Save Dialog
+                                                    setTimeout(() => {
+                                                        const mSave = document.getElementById('modal-save-btn');
+                                                        const mRect = mSave.getBoundingClientRect();
+                                                        setCursor(mRect.left + 20, mRect.top + 15);
+                                                        
+                                                        setTimeout(() => {
+                                                            cursor.classList.add('click'); mSave.classList.add('hovered');
+                                                            setTimeout(() => {
+                                                                cursor.classList.remove('click'); mSave.classList.remove('hovered');
+                                                                document.getElementById('save-overlay').classList.remove('show');
+                                                                cursor.style.opacity = 0;
+                                                                
+                                                                // Scene 7: Toast
+                                                                setTimeout(() => {
+                                                                    document.getElementById('toast').classList.add('show');
+                                                                    showBubble("데이터 저장이 완료되었습니다.", 3000);
+                                                                }, 500);
+                                                                
+                                                            }, 300);
+                                                        }, 2000);
+                                                    }, 1500);
+                                                }, 200);
+                                            }, 1500);
+                                        }, 3500);
+                                    }, 1500);
+                                }, 1500);
+                            }, 1000);
+                        }, 500);
+                    }, 6500);
+                }, 4000);
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

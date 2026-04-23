@@ -1,0 +1,6 @@
+# ~/.codex/config.toml 예시
+# 실제 사용자 환경에 맞게 수정
+model = "gpt-5.4-thinking"
+
+[tools]
+web = true

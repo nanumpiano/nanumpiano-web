@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Nanum Piano - Step 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700;900&display=swap');
+
+        body {
+            background-color: #FDFBF7;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; margin: 0; overflow: hidden;
+        }
+
+        h1 { color: #222; margin-bottom: 5px; font-weight: 900; }
+        .desc { color: #555; margin-bottom: 25px; font-weight: 500; }
+
+        #stage {
+            background-color: #0A0A0E; width: 1400px; height: 750px; border-radius: 16px; position: relative;
+            perspective: 2000px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,1);
+        }
+
+        #ambient-canvas, #note-fx-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #ambient-canvas { opacity: 0.6; }
+        #note-fx-canvas { z-index: 100; }
+
+        #top-panel { position: absolute; top: 20px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
+        .status-badge { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #FFF; padding: 5px 15px; border-radius: 20px; font-size: 14px; backdrop-filter: blur(5px); }
+        #audio-btn { background: #FF2A2A; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: inherit; box-shadow: 0 0 15px rgba(255,42,42,0.5); transition: 0.2s; }
+        #audio-btn:hover { background: #FF5555; transform: scale(1.05); }
+
+        /* Speech Bubble */
+        #global-bubble {
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
+            background: rgba(0, 229, 255, 0.95); color: #000; padding: 18px 40px; border-radius: 40px;
+            font-size: 20px; font-weight: 800; box-shadow: 0 15px 40px rgba(0,229,255,0.4);
+            z-index: 9999; opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 15px; text-align: center;
+        }
+        #global-bubble.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .bubble-icon { background: #000; color: #00E5FF; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 16px; }
+
+        #score-wrapper { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); width: 1200px; height: 320px; background: rgba(240, 245, 255, 0.95); border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.1); padding: 30px 20px; z-index: 10; display: flex; justify-content: center; align-items: center; }
+
+        .vf-stavenote { transition: all 0.2s ease-out; }
+        .vf-stavenote.active path { fill: #FF2A2A !important; stroke: #FF2A2A !important; }
+
+        #coach-panel { position: absolute; top: 520px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #111, #1a1a24); border: 1px solid rgba(255,255,255,0.2); padding: 18px 40px; border-radius: 50px; color: #FFF; font-size: 22px; z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 20px; opacity: 0; transition: 0.5s; }
+        #coach-panel.show { opacity: 1; }
+        .coach-icon { width: 36px; height: 36px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 900; font-size: 16px; box-shadow: 0 0 20px #FFD700; }
+        .coach-hl { color: #FFD700; font-weight: bold; }
+
+        #piano-container { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%) rotateX(30deg); transform-style: preserve-3d; display: flex; z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9); }
+        .key { position: relative; transition: transform 0.1s; }
+        .key.white { width: 25px; height: 170px; background: linear-gradient(to bottom, #FFF 0%, #E5E5E5 100%); border: 1px solid #AAA; border-radius: 0 0 4px 4px; }
+        .key.black { width: 15px; height: 105px; background: linear-gradient(to bottom, #333 0%, #000 100%); border-radius: 0 0 3px 3px; position: absolute; top: 0; left: -8px; z-index: 10; }
+        .key.active { transform: rotateX(-5deg) translateY(4px); background: #FFF; }
+        .key.active::after { content: ''; position: absolute; bottom: 0; left: -10px; right: -10px; height: 100%; background: linear-gradient(to top, #FF2A2A, transparent); box-shadow: 0 0 40px 15px #FF7300; animation: key-shock 0.3s ease-out forwards; pointer-events: none; border-radius: inherit; }
+        @keyframes key-shock { 0% { opacity: 1; transform: scaleY(1); } 100% { opacity: 0; transform: scaleY(1.2); } }
+
+        #laser { position: absolute; width: 6px; background: #FFF; box-shadow: 0 0 15px #FFF, 0 0 30px #FF2A2A, 0 0 50px #FF7300; transform-origin: top center; z-index: 40; opacity: 0; transition: opacity 0.2s; }
+        #laser.active { opacity: 1; }
+        #info-float { position: absolute; color: #FFD700; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px #000, 0 0 20px #FF2A2A; z-index: 100; opacity: 0; transition: opacity 0.2s; text-align: center; line-height: 1.2; }
+
+        #control-bar { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; align-items: center; z-index: 60; }
+        .ctrl-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 6px 15px; border-radius: 15px; font-size: 13px; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+
+    <h1>나눔피아노 - Step 1</h1>
+    <div class="desc">실제 피아노 훈련의 원리를 보여주는 자동 시연 프리뷰</div>
+
+    <div id="stage">
+        <canvas id="ambient-canvas"></canvas>
+        <canvas id="note-fx-canvas"></canvas>
+
+        <div id="top-panel">
+            <div class="status-badge">학습 모드: Step 1</div>
+            <button id="audio-btn" onclick="enableAudio()">사운드 켜기</button>
+        </div>
+
+        <div id="global-bubble"><div class="bubble-icon">i</div> <span id="gb-text"></span></div>
+
+        <div id="score-wrapper"><div id="score"></div></div>
+
+        <div id="coach-panel"><div class="coach-icon">AI</div> <div id="coach-text">학습을 준비합니다...</div></div>
+
+        <div id="laser"></div><div id="info-float"></div><div id="piano-container"></div>
+
+        <div id="control-bar">
+            <div class="ctrl-btn">◀ 이전 음</div><div class="ctrl-btn" style="color:#FFF; border-color:#FFF;">■ 일시정지</div><div class="ctrl-btn">다음 음 ▶</div><div class="ctrl-btn">메트로놈 ♩=80</div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Audio System
+        let synth = null; let isAudioEnabled = false;
+        async function enableAudio() {
+            if(isAudioEnabled) return;
+            await Tone.start(); synth = new Tone.Synth().toDestination();
+            isAudioEnabled = true; document.getElementById('audio-btn').style.display = 'none';
+        }
+
+        // 2. Ambient & FX
+        const ambCanvas = document.getElementById('ambient-canvas'); const ambCtx = ambCanvas.getContext('2d');
+        const fxCanvas = document.getElementById('note-fx-canvas'); const fxCtx = fxCanvas.getContext('2d');
+        ambCanvas.width = 1400; ambCanvas.height = 750; fxCanvas.width = 1400; fxCanvas.height = 750;
+        let ambParticles = Array.from({length: 100}, () => ({x: Math.random()*1400, y: Math.random()*750, s: Math.random()*2, v: Math.random()*0.5+0.1}));
+        let explosions = [];
+        function drawCanvas() {
+            ambCtx.clearRect(0,0,1400,750); fxCtx.clearRect(0,0,1400,750);
+            ambCtx.fillStyle = 'rgba(255,255,255,0.3)';
+            ambParticles.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = 750; ambCtx.beginPath(); ambCtx.arc(p.x, p.y, p.s, 0, Math.PI*2); ambCtx.fill(); });
+            
+            for(let i=explosions.length-1; i>=0; i--) {
+                let e = explosions[i]; e.x += e.vx; e.y += e.vy; e.vy += 0.5; e.life -= 0.04;
+                fxCtx.globalAlpha = Math.max(0, e.life); fxCtx.fillStyle = e.c; fxCtx.shadowBlur = 10; fxCtx.shadowColor = e.c;
+                fxCtx.beginPath(); fxCtx.arc(e.x, e.y, e.s, 0, Math.PI*2); fxCtx.fill();
+                if(e.life <= 0) explosions.splice(i, 1);
+            }
+            requestAnimationFrame(drawCanvas);
+        }
+        drawCanvas();
+        function createExplosion(x, y) {
+            for(let i=0; i<40; i++) explosions.push({ x: x, y: y, vx: (Math.random()-0.5)*20, vy: (Math.random()-0.5)*20, life: 1, s: Math.random()*5+2, c: Math.random()>0.5 ? '#FFD700' : '#FF2A2A' });
+        }
+
+        // 3. Piano
+        const piano = document.getElementById('piano-container');
+        const isBlackKey = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0];
+        let startMidi = 21; 
+        for(let i=0; i<88; i++) {
+            const midi = startMidi + i;
+            if(isBlackKey[(midi - 12) % 12] === 0) { const wk = document.createElement('div'); wk.className = 'key white'; wk.dataset.midi = midi; piano.appendChild(wk); } 
+            else { const bk = document.createElement('div'); bk.className = 'key black'; bk.dataset.midi = midi; piano.lastChild.appendChild(bk); }
+        }
+
+        // 4. Speech Bubble
+        const bubble = document.getElementById('global-bubble'); const gbText = document.getElementById('gb-text');
+        function say(text, duration = 3000) { gbText.innerHTML = text; bubble.classList.add('show'); if(duration) setTimeout(() => bubble.classList.remove('show'), duration); }
+
+        // 5. Standard Score (3 Measures)
+        const VF = Vex.Flow; const div = document.getElementById("score");
+        const renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+        renderer.resize(1150, 300); const ctx = renderer.getContext();
+        
+        const w1 = 350, w2 = 350, w3 = 350; const x1 = 0, x2 = w1, x3 = w1 + w2;
+
+        const stT1 = new VF.Stave(x1, 20, w1).addClef("treble").addKeySignature("D").addTimeSignature("4/4").setContext(ctx).draw();
+        const stB1 = new VF.Stave(x1, 130, w1).addClef("bass").addKeySignature("D").addTimeSignature("4/4").setContext(ctx).draw();
+        new VF.StaveConnector(stT1, stB1).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw();
+        new VF.StaveConnector(stT1, stB1).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(ctx).draw();
+
+        const stT2 = new VF.Stave(x2, 20, w2).setContext(ctx).draw(); const stB2 = new VF.Stave(x2, 130, w2).setContext(ctx).draw();
+        const stT3 = new VF.Stave(x3, 20, w3).setContext(ctx).draw(); const stB3 = new VF.Stave(x3, 130, w3).setContext(ctx).draw();
+        new VF.StaveConnector(stT3, stB3).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(ctx).draw();
+
+        const nT1 = [new VF.StaveNote({clef:"treble", keys:["f/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["e/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["d/4"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["c/4"], duration:"q"})];
+        const nB1 = [new VF.StaveNote({clef:"bass", keys:["d/3"], duration:"w"})];
+        const nT2 = [new VF.StaveNote({clef:"treble", keys:["b/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["a/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["b/3"], duration:"q"}), new VF.StaveNote({clef:"treble", keys:["c/4"], duration:"q"})];
+        const nB2 = [new VF.StaveNote({clef:"bass", keys:["b/2"], duration:"w"})];
+        const nT3 = [new VF.StaveNote({clef:"treble", keys:["d/4"], duration:"h"}), new VF.StaveNote({clef:"treble", keys:["e/4"], duration:"h"})];
+        const nB3 = [new VF.StaveNote({clef:"bass", keys:["g/2"], duration:"w"})];
+
+        const vT1 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(nT1); const vB1 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(nB1);
+        new VF.Formatter().joinVoices([vT1, vB1]).format([vT1, vB1], w1 - 50); vT1.draw(ctx, stT1); vB1.draw(ctx, stB1);
+        const vT2 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(nT2); const vB2 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(nB2);
+        new VF.Formatter().joinVoices([vT2, vB2]).format([vT2, vB2], w2 - 50); vT2.draw(ctx, stT2); vB2.draw(ctx, stB2);
+        const vT3 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(nT3); const vB3 = new VF.Voice({num_beats:4, beat_value:4}).addTickables(nB3);
+        new VF.Formatter().joinVoices([vT3, vB3]).format([vT3, vB3], w3 - 50); vT3.draw(ctx, stT3); vB3.draw(ctx, stB3);
+
+        const sequenceData = [
+            { vfIdx: 0, midi: 66, note: "F#4", finger: "5번", hand: "오른손", dyn: "mf" },
+            { vfIdx: 1, midi: 64, note: "E4",  finger: "4번", hand: "오른손", dyn: "mf" },
+            { vfIdx: 2, midi: 62, note: "D4",  finger: "3번", hand: "오른손", dyn: "mf" },
+            { vfIdx: 3, midi: 61, note: "C#4", finger: "2번", hand: "오른손", dyn: "mf" },
+            { vfIdx: 4, midi: 50, note: "D3",  finger: "1번", hand: "왼손", dyn: "p" }, // Bass M1
+            { vfIdx: 5, midi: 59, note: "B3",  finger: "1번", hand: "오른손", dyn: "p" },
+            { vfIdx: 6, midi: 57, note: "A3",  finger: "2번", hand: "오른손", dyn: "p" },
+            { vfIdx: 7, midi: 59, note: "B3",  finger: "1번", hand: "오른손", dyn: "p" },
+            { vfIdx: 8, midi: 61, note: "C#4", finger: "2번", hand: "오른손", dyn: "mf" },
+            { vfIdx: 9, midi: 47, note: "B2",  finger: "3번", hand: "왼손", dyn: "p" }, // Bass M2
+            { vfIdx: 10, midi: 62, note: "D4", finger: "3번", hand: "오른손", dyn: "f" },
+            { vfIdx: 11, midi: 64, note: "E4", finger: "4번", hand: "오른손", dyn: "f" },
+            { vfIdx: 12, midi: 43, note: "G2", finger: "5번", hand: "왼손", dyn: "mp" } // Bass M3
+        ];
+        const playOrder = [0, 4, 1, 2, 3, 5, 9, 6, 7, 8, 10, 12, 11];
+
+        let stepIndex = 0;
+        const stage = document.getElementById('stage');
+        const laser = document.getElementById('laser');
+        const coachText = document.getElementById('coach-text');
+        const infoFloat = document.getElementById('info-float');
+        const svgNotes = document.querySelectorAll('.vf-stavenote');
+
+        async function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        async function runAutoPlay() {
+            if(stepIndex >= playOrder.length) { stepIndex = 0; await wait(2000); }
+            
+            svgNotes.forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.key.active').forEach(k => k.classList.remove('active'));
+            laser.classList.remove('active'); infoFloat.style.opacity = 0;
+
+            const seqIdx = playOrder[stepIndex]; const data = sequenceData[seqIdx];
+            const targetSVGNote = svgNotes[seqIdx]; targetSVGNote.classList.add('active');
+
+            const noteRect = targetSVGNote.getBoundingClientRect(); const stageRect = stage.getBoundingClientRect();
+            const nx = noteRect.left + noteRect.width/2 - stageRect.left; const ny = noteRect.top + noteRect.height/2 - stageRect.top + 10; 
+
+            const targetKey = document.querySelector(`[data-midi="${data.midi}"]`);
+            const keyRect = targetKey.getBoundingClientRect();
+            const kx = keyRect.left + keyRect.width/2 - stageRect.left; const ky = keyRect.top + keyRect.height/2 - stageRect.top;
+
+            laser.style.height = `${Math.sqrt(Math.pow(kx-nx, 2) + Math.pow(ky-ny, 2))}px`;
+            laser.style.left = `${nx-3}px`; laser.style.top = `${ny}px`;
+            laser.style.transform = `rotate(${Math.atan2(ky-ny, kx-nx) * 180 / Math.PI - 90}deg)`;
+            laser.classList.add('active');
+
+            targetKey.classList.add('active');
+            infoFloat.innerHTML = `${data.hand}<br/>${data.finger}<br/><span style="font-size:16px; color:#FFF;">${data.dyn}</span>`;
+            infoFloat.style.left = `${kx - 30}px`; infoFloat.style.top = `${ky - 90}px`; infoFloat.style.opacity = 1;
+            coachText.innerHTML = `현재 음 안내: <span class="coach-hl">${data.hand} ${data.finger}</span>으로 <b>${data.note}</b>를 <span class="coach-hl">${data.dyn}</span> 강도로 누르세요.`;
+
+            setTimeout(() => {
+                createExplosion(nx, ny);
+                targetKey.classList.remove('active'); void targetKey.offsetWidth; targetKey.classList.add('active'); 
+                if(isAudioEnabled && synth) { synth.triggerAttackRelease(data.note.replace('#', ''), "8n"); synth.triggerAttackRelease(data.note, "8n"); }
+            }, 200);
+
+            stepIndex++;
+            setTimeout(runAutoPlay, 1500);
+        }
+
+        window.onload = async () => { 
+            say("저장한 같은 악보를 Step 1에 다시 불러옵니다.", 4000);
+            await wait(2000);
+            document.getElementById('coach-panel').classList.add('show');
+            say("지시선과 손가락 정보가 자동으로 붙었습니다.", 4000);
+            await wait(2000);
+            say("이제 한 음씩 따라치며 다시 학습할 수 있습니다.", 4000);
+            setTimeout(runAutoPlay, 500); 
+        };
+    </script>
+</body>
+</html>
