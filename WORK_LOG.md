@@ -46,7 +46,7 @@
 - Git 처리:
   - remote 설정 결과: `origin https://github.com/nanumpiano/nanumpiano-web.git`
   - branch 처리: 로컬 기준 브랜치를 `main`으로 정리
-  - commit hash: `0bd2180` (`chore: prepare nanumpiano web for deployment`)
+  - commit hash: `0bd2180` (`chore: prepare nanumpiano web for deployment`), `7feaebb` (`chore: record Vercel deployment update`), `0e62340` (`fix: improve mobile preview scaling`)
   - push 결과: 일반 push는 non-fast-forward로 거부, 원격 백업 후 승인된 `git push --force-with-lease origin main` 성공
   - 원격 백업 브랜치 여부: `backup/remote-main-before-20260427-1648` 생성 및 push 확인
 
@@ -54,7 +54,7 @@
   - `vercel whoami` 결과: `nanumpiano-5602`
   - `vercel link` 결과: `pianos-projects-8475df03/nanumpiano-web` 연결, project id `prj_LXrkShVfbsJOPr0YzhgZZn7dmYBw`
   - production deploy 결과: 첫 배포는 기존 Next.js preset 때문에 실패, `vercel.json`에서 `framework: null`로 정적 배포 override 후 READY
-  - deployment URL: `https://nanumpiano-gj5yamiz1-pianos-projects-8475df03.vercel.app`
+  - deployment URL: `https://nanumpiano-imul8bret-pianos-projects-8475df03.vercel.app`
   - 목표 URL 접속 결과: `https://nanumpiano-web.vercel.app/` 200 응답 및 화면 표시 확인
 
 - 검증 방법:
@@ -107,8 +107,8 @@
 
 - Git 상태:
   - 기록 시점: `main`
-  - 배포 기준 커밋: `0bd2180`
-  - 본 기록 및 Vercel 정적 배포 설정은 후속 커밋으로 `origin/main`에 추가 반영 예정
+  - 배포 기준 커밋: `0e62340`
+  - 본 기록 URL 보정만 후속 커밋으로 `origin/main`에 추가 반영 예정
 
 ## 2026-04-23 / 작성자: Antigravity / 시작 09:40 / 종료 -
 - 작업: 나눔피아노 프리뷰 프로젝트 시작, 루트 정본 6개 및 하네스 문서 분석, '실행프로그램 작동 순서' 이미지 및 PDF 분석 완료, 4개 프리뷰 장면 상세 계획 수립 및 보정, Step 1 시네마틱 프로토타입 웹 구현 완료, Step 1 오토 시네마틱 및 리듬게임 확장 프리뷰 개편
