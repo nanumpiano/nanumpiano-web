@@ -8,3 +8,6 @@ node_modules/
 
 verification/screenshots/
 .verification/tmp/
+
+*.md
+adapters/
