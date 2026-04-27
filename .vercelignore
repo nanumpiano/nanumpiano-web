@@ -1,0 +1,10 @@
+.git/
+.vercel/
+node_modules/
+
+*.log
+*.zip
+*.pdf
+
+verification/screenshots/
+.verification/tmp/

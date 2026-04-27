@@ -34,3 +34,5 @@ node_modules/
 # Codex / local runtime outputs
 .codex-cache/
 .verification/tmp/
+
+.vercel

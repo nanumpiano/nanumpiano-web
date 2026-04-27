@@ -5,6 +5,109 @@
 - 문서 상태: 초기 세팅 템플릿
 - 문서 성격: 해당 프로젝트의 단일 통합 작업일지
 
+## 2026-04-27 17:41 / 작업자: Codex / GitHub 및 Vercel 배포 갱신
+
+- 작업 목적:
+  - 현재 `D:\그래비티프리뷰0423` 폴더의 나눔피아노 웹 프리뷰를 GitHub `nanumpiano-web` 저장소와 Vercel `nanumpiano-web` production 배포에 반영하기 위함.
+
+- 작업 전 기준:
+  - 로컬 작업 루트: `D:\그래비티프리뷰0423`
+  - 기존 remote: `https://github.com/piani/nanumpiano-web.git`
+  - 변경 후 remote: `https://github.com/nanumpiano/nanumpiano-web.git`
+  - 기존 Vercel 연결 상태: `.vercel` 없음
+  - 목표 배포 URL: `https://nanumpiano-web.vercel.app/`
+
+- 근거 자료:
+  - 사용자 제공 GitHub repo: `https://github.com/nanumpiano/nanumpiano-web.git`
+  - 사용자 제공 Vercel URL: `https://nanumpiano-web.vercel.app/`
+  - 현재 로컬 폴더: `D:\그래비티프리뷰0423`
+  - 기존 배포 문제 보고서: GitHub URL 미확인 및 Vercel 미인증으로 배포 미완료
+  - 루트 지침 문서: `CONSTITUTION.md`, `PRINCIPLES.md`, `STRUCTURE.md`, `AI.md`, `SOURCES.md`, `WORK_LOG.md`
+
+- 변경 파일:
+  - `index.html`
+  - `preview/step1_v3.html`
+  - `preview/step2.html`
+  - `preview/editor_flow.html`
+  - `preview/reapply_flow.html`
+  - `preview/expansion.html`
+  - `assets/nanum-logo-cropped.png`
+  - `0427-md/`
+  - `nanumpiano_project_explanation.html`
+  - `verification/screenshots/deploy-local-*.png`
+  - `verification/screenshots/deploy-prod-*.png`
+  - `.gitignore`
+  - `.vercelignore`
+  - `vercel.json`
+  - `WORK_LOG.md`
+  - 기존 `GEMINI.md` 삭제 상태 반영
+  - 기존 예비보고 이미지 파일명 변경 상태 반영
+
+- Git 처리:
+  - remote 설정 결과: `origin https://github.com/nanumpiano/nanumpiano-web.git`
+  - branch 처리: 로컬 기준 브랜치를 `main`으로 정리
+  - commit hash: `0bd2180` (`chore: prepare nanumpiano web for deployment`)
+  - push 결과: 일반 push는 non-fast-forward로 거부, 원격 백업 후 승인된 `git push --force-with-lease origin main` 성공
+  - 원격 백업 브랜치 여부: `backup/remote-main-before-20260427-1648` 생성 및 push 확인
+
+- Vercel 처리:
+  - `vercel whoami` 결과: `nanumpiano-5602`
+  - `vercel link` 결과: `pianos-projects-8475df03/nanumpiano-web` 연결, project id `prj_LXrkShVfbsJOPr0YzhgZZn7dmYBw`
+  - production deploy 결과: 첫 배포는 기존 Next.js preset 때문에 실패, `vercel.json`에서 `framework: null`로 정적 배포 override 후 READY
+  - deployment URL: `https://nanumpiano-gj5yamiz1-pianos-projects-8475df03.vercel.app`
+  - 목표 URL 접속 결과: `https://nanumpiano-web.vercel.app/` 200 응답 및 화면 표시 확인
+
+- 검증 방법:
+  - `npm.cmd install`
+  - Node 임시 정적 서버 + Playwright 로컬 브라우저 검수
+  - GitHub `origin/main` push 확인
+  - Vercel production 배포 확인
+  - 목표 URL Playwright 브라우저 접속 검수
+  - 스크린샷 생성: `verification/screenshots/deploy-local-*.png`, `verification/screenshots/deploy-prod-*.png`
+
+- 검증 결과:
+  - 로컬 홈, Step 1, Step 2, Editor, Reapply 프리뷰 모두 200 응답
+  - production 목표 URL 홈, Step 1, Step 2, Editor, Reapply 프리뷰 모두 200 응답
+  - Hero 텍스트 `나눔피아노` 표시 확인
+  - 홈의 live preview iframe 4개 확인
+  - 모바일 390px 기준 `scrollWidth=390`, 가로 스크롤 없음
+  - 콘솔 에러 및 request failed 없음
+
+- 실패 목록:
+  - PowerShell에서 `npm install` 실행 시 `npm.ps1` 실행 정책 오류 발생
+  - background 정적 서버 시작 시 PowerShell job/프로세스 유지 실패 발생
+  - 첫 `git push -u origin main`은 원격 이력 차이로 non-fast-forward 거부
+  - 첫 `vercel --prod`는 기존 Vercel 프로젝트의 Next.js preset 때문에 `No Next.js version detected` 오류 발생
+  - 루트 파일 목록에서 `나눔피아노_전체_설계.md`는 없고 `0427-md/나눔피아노_전체_설계_문제해결형.md`가 존재함
+
+- 실패 원인:
+  - Windows PowerShell 실행 정책상 `npm.ps1` 직접 실행 제한
+  - 샌드박스 세션에서 장기 background 서버 유지 제약
+  - `origin/main`의 기존 v0/Next.js 이력과 현재 로컬 정적 프리뷰 이력이 서로 다름
+  - Vercel 프로젝트가 이전 결과물 기준 `Framework Preset: Next.js`로 설정되어 있었음
+
+- 수정 방법:
+  - `npm.cmd install` 사용
+  - Playwright 검수 스크립트 내부에서 임시 HTTP 서버를 띄워 검수 후 종료
+  - `origin/main`을 `backup/remote-main-before-20260427-1648`로 보존한 뒤 승인된 `force-with-lease` 사용
+  - `vercel.json`에 `framework: null`, `installCommand: ""` 추가
+  - `.vercelignore`로 `node_modules`, `.vercel`, 검수 스크린샷, zip/pdf/log 등 배포 불필요 파일 제외
+  - favicon 404 제거를 위해 HTML head에 빈 favicon 선언 추가
+
+- 남은 문제:
+  - 루트의 지정 파일명 `나눔피아노_전체_설계.md`는 현재 폴더 루트에 없음
+  - Vercel 프로젝트 자체의 dashboard preset은 과거 Next.js 흔적이 남아 있으나, 현재 배포는 `vercel.json` override로 정적 배포 성공
+
+- 다음 작업:
+  - 배포 후 사용자 확인
+  - 필요 시 기존 v0/Vercel 잔여 연결 정리
+  - 홈페이지 내용 추가 보정
+
+- Git 상태:
+  - 기록 시점: `main`
+  - 배포 기준 커밋: `0bd2180`
+  - 본 기록 및 Vercel 정적 배포 설정은 후속 커밋으로 `origin/main`에 추가 반영 예정
+
 ## 2026-04-23 / 작성자: Antigravity / 시작 09:40 / 종료 -
 - 작업: 나눔피아노 프리뷰 프로젝트 시작, 루트 정본 6개 및 하네스 문서 분석, '실행프로그램 작동 순서' 이미지 및 PDF 분석 완료, 4개 프리뷰 장면 상세 계획 수립 및 보정, Step 1 시네마틱 프로토타입 웹 구현 완료, Step 1 오토 시네마틱 및 리듬게임 확장 프리뷰 개편
 - 변경 파일: WORK_LOG.md, 간략작동원리정리.MD(사용자), preview/step1.html(수정), preview/expansion.html(신규)
@@ -247,4 +350,3 @@
   2) 로컬 구동: `python -m http.server 8088`를 통해 로컬 구동 확인 완료 (주소: http://127.0.0.1:8088/)
   3) 브라우저 검수: Hero 영역, Step 1, Step 2, Editor, Reapply, 확장 학습 섹션 총 6종의 스크린샷을 추출 완료. 데스크톱 환경(1600x1200)에서 프리뷰 블록이 잘림 없이 꽉 찬 무대처럼 보이는 것 확인.
 - 다음 작업: 변경사항 커밋 (`feat: refine homepage preview layout and publish-ready setup`) 진행.
-
