@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nanum Piano - 재적용 프리뷰</title>
     <link rel="icon" href="data:,">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
@@ -103,6 +104,18 @@
         #step2-tempo-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: all; }
         .tempo-title { font-size: 24px; font-weight: 900; margin-bottom: 20px; }
         .tempo-value { font-size: 56px; font-weight: 900; color: #00E5FF; margin: 10px 0; text-shadow: 0 0 20px #00E5FF; }
+
+        @media (max-width: 900px), (max-height: 920px) {
+            html, body { width: 100%; height: 100%; overflow: hidden; }
+            body { position: relative; min-height: 100vh; }
+            #app-container {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(min(calc(100vw / 1600), calc(100vh / 900)));
+                transform-origin: center center;
+            }
+        }
 
     </style>
 </head>

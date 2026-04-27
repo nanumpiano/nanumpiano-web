@@ -71,6 +71,7 @@
   - Hero 텍스트 `나눔피아노` 표시 확인
   - 홈의 live preview iframe 4개 확인
   - 모바일 390px 기준 `scrollWidth=390`, 가로 스크롤 없음
+  - 직접 프리뷰 URL도 viewport meta와 모바일 scale 보정 후 documentElement 기준 가로 스크롤 없음
   - 콘솔 에러 및 request failed 없음
 
 - 실패 목록:
@@ -93,6 +94,7 @@
   - `vercel.json`에 `framework: null`, `installCommand: ""` 추가
   - `.vercelignore`로 `node_modules`, `.vercel`, 검수 스크린샷, zip/pdf/log 등 배포 불필요 파일 제외
   - favicon 404 제거를 위해 HTML head에 빈 favicon 선언 추가
+  - 직접 프리뷰 HTML에 viewport meta와 모바일용 scale 규칙 추가
 
 - 남은 문제:
   - 루트의 지정 파일명 `나눔피아노_전체_설계.md`는 현재 폴더 루트에 없음
